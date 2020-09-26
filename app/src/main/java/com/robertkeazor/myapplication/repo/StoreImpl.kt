@@ -16,7 +16,8 @@ class StoreImpl<T : Action, S : State, I : Interpreter>(
 ) : Store<T, S, I> {
     val actionStateFlow: MutableStateFlow<T?> = MutableStateFlow(null)
     val states: MutableStateFlow<S?> = MutableStateFlow(null)
-    init {
+
+override fun initialize(scope: CoroutineScope) {
         scope.launch {
             actionStateFlow
                 .filterNotNull()
