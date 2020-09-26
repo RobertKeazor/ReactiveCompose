@@ -1,6 +1,7 @@
 package com.robertkeazor.myapplication
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
@@ -18,8 +19,12 @@ import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
 import com.robertkeazor.myapplication.ui.MyApplicationTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    private val vm: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -47,9 +52,7 @@ fun Greeting(name: String, age: MutableState<Int>) {
             Text(text = "Big Guy", modifier = Modifier.padding(16.dp))
             Checkbox(checked = true, onCheckedChange = { Modifier.padding(vertical = 16.dp) })
         }
-
     }
-    
 }
 
 @Composable
@@ -60,9 +63,7 @@ fun submitButton(age: MutableState<Int>) {
             age.value = oldAge + 1
         }
         ) {
-
         }
-
     }
 }
 

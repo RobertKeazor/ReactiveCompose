@@ -7,23 +7,26 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class StoreImpl<T : Action, S : State, I : Interpreter>(
-    val stateObject: MutableState<S>,
+class StoreImpl<T : Action, S : State, I : Interpreter> @Inject constructor(
     val creator: ActionCreator<I, T>,
-    val scope: CoroutineScope,
     val reducer: Reducer<T, S>
 ) : Store<T, S, I> {
+    lateinit var scope: CoroutineScope
+    lateinit var stateObject: MutableState<S>
     val actionStateFlow: MutableStateFlow<T?> = MutableStateFlow(null)
     val states: MutableStateFlow<S?> = MutableStateFlow(null)
 
-override fun initialize(scope: CoroutineScope) {
+override fun initialize(state: MutableState<S>, scope: CoroutineScope) {
+    this.stateObject = state
         scope.launch {
             actionStateFlow
                 .filterNotNull()
                 .map { reducer.reduce(it) }
                 .onEach { stateObject.value = it }
         }
+    this.scope = scope
     }
 
     override fun interpret(interpreter: I) {
