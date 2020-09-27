@@ -18,7 +18,7 @@ private val LightColorPalette = lightColors(
         primary = purple500,
         primaryVariant = purple700,
         secondary = teal200,
-        background = Color.Blue,
+        background = Color.White,
 )
 
 @Composable

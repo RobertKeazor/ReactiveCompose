@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string name="legal_text">When you update your primary email address,
+        we will apply the change across your Capital One account(s). Furthermore,
+    when you provide your email address, we may user it to send you important
+    information about your application and accounts(s), as well as other
+    useful products and services.</string>
 </resources>
