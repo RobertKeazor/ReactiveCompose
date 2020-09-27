@@ -18,8 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
+import com.robertkeazor.myapplication.apprepo.AppActions
+import com.robertkeazor.myapplication.apprepo.AppInterpreter
+import com.robertkeazor.myapplication.apprepo.AppState
+import com.robertkeazor.myapplication.repo.Interpreter
+import com.robertkeazor.myapplication.repo.Store
 import com.robertkeazor.myapplication.ui.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.random.Random
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -34,8 +40,8 @@ class MainActivity : AppCompatActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     Column {
-                        Greeting("Android", age)
-                        submitButton(age = age)
+                        Greeting("Android", vm.state)
+                        submitButton(vm.store)
                     }
                 }
             }
@@ -44,9 +50,9 @@ class MainActivity : AppCompatActivity() {
 }
 
 @Composable
-fun Greeting(name: String, age: MutableState<Int>) {
+fun Greeting(name: String, age: MutableState<AppState>) {
     Column {
-        Text(text = "Hello $name! ${age.value}")
+        Text(text = "Hello $name! ${age.value.userName}")
         Text(text = "How are you")
         Row {
             Text(text = "Big Guy", modifier = Modifier.padding(16.dp))
@@ -56,11 +62,11 @@ fun Greeting(name: String, age: MutableState<Int>) {
 }
 
 @Composable
-fun submitButton(age: MutableState<Int>) {
+fun submitButton(store: Store<AppActions, AppState, AppInterpreter>) {
     Column {
         Button(onClick = {
-            val oldAge = age.value
-            age.value = oldAge + 1
+            val randomNumber = Random(100)
+            store.interpret(AppInterpreter.EditLogin("It Works $randomNumber"))
         }
         ) {
         }
@@ -71,6 +77,6 @@ fun submitButton(age: MutableState<Int>) {
 @Composable
 fun DefaultPreview() {
     MyApplicationTheme {
-        Greeting("Android Robert", mutableStateOf(15))
+        Greeting("Android Robert", mutableStateOf(AppState("Rob", "try")))
     }
 }

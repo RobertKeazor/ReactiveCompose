@@ -2,10 +2,8 @@ package com.robertkeazor.myapplication.repo
 
 import androidx.compose.runtime.MutableState
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,16 +13,17 @@ class StoreImpl<T : Action, S : State, I : Interpreter> @Inject constructor(
 ) : Store<T, S, I> {
     lateinit var scope: CoroutineScope
     lateinit var stateObject: MutableState<S>
+    lateinit var actionJob: Job
     val actionStateFlow: MutableStateFlow<T?> = MutableStateFlow(null)
-    val states: MutableStateFlow<S?> = MutableStateFlow(null)
+    override val states: MutableStateFlow<S?> = MutableStateFlow(null)
 
 override fun initialize(state: MutableState<S>, scope: CoroutineScope) {
     this.stateObject = state
-        scope.launch {
+       actionJob = scope.launch {
             actionStateFlow
                 .filterNotNull()
                 .map { reducer.reduce(it) }
-                .onEach { stateObject.value = it }
+                .collect { stateObject.value = it }
         }
     this.scope = scope
     }
