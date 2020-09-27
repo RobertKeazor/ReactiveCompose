@@ -22,7 +22,7 @@ override fun initialize(state: MutableState<S>, scope: CoroutineScope) {
        actionJob = scope.launch {
             actionStateFlow
                 .filterNotNull()
-                .map { reducer.reduce(it) }
+                .map { reducer.reduce(stateObject.value , it) }
                 .collect { stateObject.value = it }
         }
     this.scope = scope

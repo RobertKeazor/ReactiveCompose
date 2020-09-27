@@ -4,8 +4,9 @@ import com.robertkeazor.myapplication.repo.Reducer
 import javax.inject.Inject
 
 class AppReducer @Inject constructor() : Reducer<AppActions, AppState> {
-    override fun reduce(action: AppActions) = when (action) {
-        is AppActions.Auth -> AppState(action.userName, action.password)
+    override fun reduce(previousState: AppState, action: AppActions) = when (action) {
+        is AppActions.TypeUserName -> previousState.copy(userName = action.userName)
+        is AppActions.TypePassword -> previousState.copy(password = action.password)
         AppActions.SUBMIT -> TODO()
     }
 }
