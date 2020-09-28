@@ -24,6 +24,7 @@ import com.robertkeazor.myapplication.repo.Store
 import com.robertkeazor.myapplication.ui.MyApplicationTheme
 import com.robertkeazor.myapplication.ui.topActionBar
 import com.robertkeazor.myapplication.ui.submitButton
+import com.robertkeazor.myapplication.ui.submitButtonDisabled
 import dagger.hilt.android.AndroidEntryPoint
 
 typealias AppStore = Store<AppActions, AppState, AppInterpreter>
@@ -49,15 +50,15 @@ class MainActivity : AppCompatActivity() {
                 // A./ surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     EmailPluginContent(
-                        emailErrorIsNotValidError,
-                        emailErrorOver50Error,
-                        emailErrorConfirmNoMatch,
-                        emailUpdateButtonLabel,
-                        GlobalConstants.ACTION_BAR_TILE_LABEL,
-                        GlobalConstants.EMAIL_ADDRESS_LABEL,
-                        GlobalConstants.CONFIRM_EMAIL_ADDRESS_LABEL,
-                        vm,
-                        legalText
+                            emailErrorIsNotValidError,
+                            emailErrorOver50Error,
+                            emailErrorConfirmNoMatch,
+                            emailUpdateButtonLabel,
+                            GlobalConstants.ACTION_BAR_TILE_LABEL,
+                            GlobalConstants.EMAIL_ADDRESS_LABEL,
+                            GlobalConstants.CONFIRM_EMAIL_ADDRESS_LABEL,
+                            vm,
+                            legalText
                     )
                 }
             }
@@ -74,20 +75,20 @@ fun EmailInputForm(emailErrorNotValidError: String,
                    store: AppStore,
                    state: MutableState<AppState>) {
     Column(
-        modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(12.dp)
     ) {
         EmailEditTextAddress(
-            emailErrorNotValidError,
-            emailErrorOver50Error,
-            emailAddressLabel,
-            store,
-            state)
+                emailErrorNotValidError,
+                emailErrorOver50Error,
+                emailAddressLabel,
+                store,
+                state)
 
         EmailConfirmTextAddress(
-            emailConfirmErrorNoMatch,
-            emailConfirmAddressLabel,
-            store,
-            state)
+                emailConfirmErrorNoMatch,
+                emailConfirmAddressLabel,
+                store,
+                state)
     }
 }
 
@@ -98,20 +99,20 @@ fun EmailEditTextAddress(emailErrorNotValidError: String,
                          store: AppStore,
                          state: MutableState<AppState>) {
     TextField(
-        label = { Text(emailAddressLabel) },
-        value = state.value.emailAddress,
-        isErrorValue = state.value.emailError != null,
-        onValueChange = { store.interpret(AppInterpreter.EditEmailAddress(it)) },
-        backgroundColor = Color.White
+            label = { Text(emailAddressLabel) },
+            value = state.value.emailAddress,
+            isErrorValue = state.value.emailError != null,
+            onValueChange = { store.interpret(AppInterpreter.EditEmailAddress(it)) },
+            backgroundColor = Color.White
     )
     Text(
-        textAlign = TextAlign.Center,
-        text = when (state.value.emailError) {
-            EmailError.MaxCharLength -> emailErrorOver50Error
-            EmailError.InvalidEmail -> emailErrorNotValidError
-            else -> ""
-        },
-        style = MaterialTheme.typography.caption.copy(color = Color.Red),
+            textAlign = TextAlign.Center,
+            text = when (state.value.emailError) {
+                EmailError.MaxCharLength -> emailErrorOver50Error
+                EmailError.InvalidEmail -> emailErrorNotValidError
+                else -> ""
+            },
+            style = MaterialTheme.typography.caption.copy(color = Color.Red),
     )
 }
 
@@ -122,30 +123,30 @@ fun EmailConfirmTextAddress(emailConfirmErrorNoMatch: String,
                             state: MutableState<AppState>) {
 
     TextField(
-        modifier = Modifier.padding(top = 16.dp),
-        label = { Text(emailConfirmAddressLabel) },
-        value = state.value.emailConfirmAddress,
-        onValueChange = {
-            if (state.value.emailConfirmFieldEnabled)
-                store.interpret(AppInterpreter.EditEmailConfirm(it))
-        },
-        isErrorValue = state.value.emailError != null,
-        backgroundColor = Color.White
+            modifier = Modifier.padding(top = 16.dp),
+            label = { Text(emailConfirmAddressLabel) },
+            value = state.value.emailConfirmAddress,
+            onValueChange = {
+                if (state.value.emailConfirmFieldEnabled)
+                    store.interpret(AppInterpreter.EditEmailConfirm(it))
+            },
+            isErrorValue = state.value.emailError != null,
+            backgroundColor = Color.White
     )
     Text(
-        textAlign = TextAlign.Center,
-        text = when (state.value.emailError) {
-            EmailError.EmailMismatch -> emailConfirmErrorNoMatch
-            else -> ""
-        },
-        style = MaterialTheme.typography.caption.copy(color = Color.Red),
+            textAlign = TextAlign.Center,
+            text = when (state.value.emailError) {
+                EmailError.EmailMismatch -> emailConfirmErrorNoMatch
+                else -> ""
+            },
+            style = MaterialTheme.typography.caption.copy(color = Color.Red),
     )
 }
 
 @Composable
 fun legalText(legalText: String) {
     Text(modifier = Modifier.padding(12.dp),
-        text = legalText
+            text = legalText
     )
 }
 
@@ -153,57 +154,62 @@ fun legalText(legalText: String) {
 fun EmailTypeActionBar(typeOfCustomerEmail: String) {
     TopAppBar(backgroundColor = topActionBar) {
         Text(
-            modifier = Modifier.gravity(Alignment.CenterVertically).padding(start = 10.dp),
-            text = typeOfCustomerEmail,
-            color = Color.White,
-            fontSize = 20.sp,
-            textAlign = TextAlign.Center)
+                modifier = Modifier.gravity(Alignment.CenterVertically).padding(start = 10.dp),
+                text = typeOfCustomerEmail,
+                color = Color.White,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center)
     }
 }
 
 @Composable
-fun SubmitButton(emailUpdateButtonLabel: String) {
+fun SubmitButton(emailUpdateButtonLabel: String, state: MutableState<AppState>) {
     Button(
-        onClick = { },
-        backgroundColor = submitButton
-    ) {
+            onClick = { },
+            backgroundColor = if (state.value.emailSubmitButtonEnabled) submitButton else submitButtonDisabled,
+            enabled = state.value.emailSubmitButtonEnabled
+
+
+            ) {
         Text(
-            color = Color.White,
-            text = emailUpdateButtonLabel
+                color = Color.White,
+                text = emailUpdateButtonLabel
         )
     }
 }
 
 
 @Composable
-fun EmailPluginContent(emailErrorNotValidError: String,
-                       emailErrorOver50Error: String,
-                       emailConfirmErrorNoMatch: String,
-                       emailUpdateButtonLabel: String,
-                       actionBarTitleLabel: String,
-                       emailAddressLabel: String,
-                       emailConfirmAddressLabel: String,
-                       vm: MainViewModel,
-                       legalText: String) {
+fun EmailPluginContent(
+        emailErrorNotValidError: String,
+        emailErrorOver50Error: String,
+        emailConfirmErrorNoMatch: String,
+        emailUpdateButtonLabel: String,
+        actionBarTitleLabel: String,
+        emailAddressLabel: String,
+        emailConfirmAddressLabel: String,
+        vm: MainViewModel,
+        legalText: String
+) {
     Column(modifier = Modifier.fillMaxHeight()) {
         Row {
-           EmailTypeActionBar(actionBarTitleLabel)
+            EmailTypeActionBar(actionBarTitleLabel)
         }
         Row {
             EmailInputForm(
-                emailErrorNotValidError,
-                emailErrorOver50Error,
-                emailConfirmErrorNoMatch,
-                emailAddressLabel,
-                emailConfirmAddressLabel,
-                vm.store,
-                vm.state)
+                    emailErrorNotValidError,
+                    emailErrorOver50Error,
+                    emailConfirmErrorNoMatch,
+                    emailAddressLabel,
+                    emailConfirmAddressLabel,
+                    vm.store,
+                    vm.state)
         }
         Row {
             legalText(legalText)
         }
         Row(modifier = Modifier.align(Alignment.End).padding(end = 10.dp)) {
-            SubmitButton(emailUpdateButtonLabel)
+            SubmitButton(emailUpdateButtonLabel, vm.state)
         }
     }
 }

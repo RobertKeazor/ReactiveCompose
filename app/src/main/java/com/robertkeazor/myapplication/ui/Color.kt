@@ -8,3 +8,4 @@ val purple700 = Color(0xFF3700B3)
 val teal200 = Color(0xFF03DAC5)
 val topActionBar = Color(0xFF292fe3)
 val submitButton = Color(0xFF292fe3)
+val submitButtonDisabled = Color.Gray
