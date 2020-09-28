@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import com.robertkeazor.myapplication.apprepo.AppActions
 import com.robertkeazor.myapplication.apprepo.AppInterpreter
 import com.robertkeazor.myapplication.apprepo.AppState
-import com.robertkeazor.myapplication.helpers.EmailValidator
+import com.robertkeazor.myapplication.apprepo.EmailError
 import com.robertkeazor.myapplication.helpers.GlobalConstants
 import com.robertkeazor.myapplication.repo.Store
 import com.robertkeazor.myapplication.ui.MyApplicationTheme
@@ -84,8 +84,6 @@ fun EmailInputForm(emailErrorNotValidError: String,
             state)
 
         EmailConfirmTextAddress(
-            emailErrorNotValidError,
-            emailErrorOver50Error,
             emailConfirmErrorNoMatch,
             emailConfirmAddressLabel,
             store,
@@ -99,83 +97,47 @@ fun EmailEditTextAddress(emailErrorNotValidError: String,
                          emailAddressLabel: String,
                          store: AppStore,
                          state: MutableState<AppState>) {
-    val primaryIsValidError =
-        when {
-            EmailValidator.isEmailValid(state.value.emailAddress) -> null
-            state.value.emailAddress.isBlank() -> null
-            else -> emailErrorNotValidError
-        }
-    val primaryErrorExceedCharsError =
-        if (state.value.emailAddress.length > GlobalConstants.EMAIL_ADDRESS_CHAR_LIMIT)
-            emailErrorOver50Error
-        else null
-
-    val emailAddressError =
-        when {
-            primaryErrorExceedCharsError != null -> emailErrorOver50Error
-            primaryIsValidError != null -> emailErrorNotValidError
-            else -> null
-        }
-
     TextField(
         label = { Text(emailAddressLabel) },
         value = state.value.emailAddress,
-        isErrorValue = !emailAddressError.isNullOrEmpty(),
+        isErrorValue = state.value.emailError != null,
         onValueChange = { store.interpret(AppInterpreter.EditEmailAddress(it)) },
         backgroundColor = Color.White
     )
     Text(
         textAlign = TextAlign.Center,
-        text = if (!emailAddressError.isNullOrEmpty()) emailAddressError else "",
+        text = when (state.value.emailError) {
+            EmailError.MaxCharLength -> emailErrorOver50Error
+            EmailError.InvalidEmail -> emailErrorNotValidError
+            else -> ""
+        },
         style = MaterialTheme.typography.caption.copy(color = Color.Red),
     )
 }
 
 @Composable
-fun EmailConfirmTextAddress(emailErrorNotValidError: String,
-                            emailErrorOver50Error: String,
-                            emailConfirmErrorNoMatch: String,
+fun EmailConfirmTextAddress(emailConfirmErrorNoMatch: String,
                             emailConfirmAddressLabel: String,
                             store: AppStore,
                             state: MutableState<AppState>) {
-
-    val primaryIsValidError =
-        when {
-            EmailValidator.isEmailValid(state.value.emailAddress) -> null
-            state.value.emailAddress.isBlank() -> null
-            else -> emailErrorNotValidError
-        }
-    val primaryErrorExceedCharsError =
-        if (state.value.emailAddress.length > GlobalConstants.EMAIL_ADDRESS_CHAR_LIMIT)
-            emailErrorOver50Error
-        else null
-
-    val emailAddressError =
-        when {
-            primaryErrorExceedCharsError != null -> emailErrorOver50Error
-            primaryIsValidError != null -> emailErrorNotValidError
-            else -> null
-        }
-
-    val hasConfirmationEmail = state.value.emailAddress.isNotEmpty() && emailAddressError == null
-
-    val hasConfirmButtonEnabled =
-        hasConfirmationEmail && state.value.emailAddress == state.value.emailConfirmAddress
 
     TextField(
         modifier = Modifier.padding(top = 16.dp),
         label = { Text(emailConfirmAddressLabel) },
         value = state.value.emailConfirmAddress,
         onValueChange = {
-            if (hasConfirmationEmail)
+            if (state.value.emailConfirmFieldEnabled)
                 store.interpret(AppInterpreter.EditEmailConfirm(it))
         },
-        isErrorValue = !hasConfirmButtonEnabled,
+        isErrorValue = state.value.emailError != null,
         backgroundColor = Color.White
     )
     Text(
         textAlign = TextAlign.Center,
-        text = if (!hasConfirmButtonEnabled) emailConfirmErrorNoMatch else "",
+        text = when (state.value.emailError) {
+            EmailError.EmailMismatch -> emailConfirmErrorNoMatch
+            else -> ""
+        },
         style = MaterialTheme.typography.caption.copy(color = Color.Red),
     )
 }

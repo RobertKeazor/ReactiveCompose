@@ -5,8 +5,8 @@ import javax.inject.Inject
 
 class AppActionCreator @Inject constructor() : ActionCreator<AppInterpreter, AppActions> {
     override suspend fun sendAction(item: AppInterpreter): AppActions = when (item) {
-        is AppInterpreter.EditEmailAddress -> AppActions.TypeUserName(item.input)
-        is AppInterpreter.EditEmailConfirm -> AppActions.TypePassword(item.input)
+        is AppInterpreter.EditEmailAddress -> AppActions.TypeEmailAddress(item.input)
+        is AppInterpreter.EditEmailConfirm -> AppActions.TypeConfirmAddress(item.input)
         AppInterpreter.SUBMIT -> TODO()
     }
 }
