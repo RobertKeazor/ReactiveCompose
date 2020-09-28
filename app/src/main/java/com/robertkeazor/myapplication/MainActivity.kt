@@ -153,7 +153,7 @@ fun legalText(legalText: String) {
 fun EmailTypeActionBar(typeOfCustomerEmail: String) {
     TopAppBar(backgroundColor = topActionBar) {
         Text(
-            modifier = Modifier.gravity(Alignment.CenterVertically),
+            modifier = Modifier.gravity(Alignment.CenterVertically).padding(start = 10.dp),
             text = typeOfCustomerEmail,
             color = Color.White,
             fontSize = 20.sp,
