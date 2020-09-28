@@ -5,4 +5,8 @@
     when you provide your email address, we may user it to send you important
     information about your application and accounts(s), as well as other
     useful products and services.</string>
+    <string name="email_error_not_valid">This is not a valid email.</string>
+    <string name="email_error_over_50">Email must not exceed 50 characters.</string>
+    <string name="email_confirm_no_match">Try again. These emails do not match</string>
+    <string name="submit_button_text">UPDATE EMAIL</string>
 </resources>
